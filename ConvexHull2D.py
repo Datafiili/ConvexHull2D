@@ -3,9 +3,6 @@
 
 import math
 
-#def InTriangle(point, triangle): #Point = array of x & y of the point. Triange = array of arrays of x & y positions.
-    #Check angle between triangles first vs all other.
-
 def ConvexHull2D(vectors):
     if len(vectors) <= 2:
         return vectors
