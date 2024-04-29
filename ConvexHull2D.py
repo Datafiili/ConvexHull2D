@@ -52,15 +52,24 @@ def ConvexHullV2(vectors):
             corners[2] = vectors[i]
         if vectors[i][1] < corners[3][1]: #Bottom
             corners[3] = vectors[i]
-    print("Corners:",corners)
+    #print("Corners:",corners)
     
-    Packs = [[corners[1]],[[corners[2]]],[[corners[3]]],[[corners[0]]]] #Packs of vertexes that are possibly on the hull. Seperated based on the 4 corners.
-    
+    Packs = [[corners[1]],[corners[2]],[corners[3]],[corners[0]]] #Packs of vertexes that are possibly on the hull. Seperated based on the 4 corners.
+    print("## ----- Calculate Corners ----- ##")
+    CornerAngles = [] #Angle from corner to a nother
+    for i in range(len(corners)):
+        Angle = math.atan2(corners[(i + 1) % len(corners)][0] - corners[i][0],corners[(i + 1) % len(corners)][1] - corners[i][1])
+        if Angle < 0:
+            Angle += math.pi * 2
+        CornerAngles.append(Angle)
+
     for i in range(len(vectors)):
         if vectors[i] not in corners:
+            print("Vectors[i]",vectors[i])
             #Top left pack
             if vectors[i][0] < corners[1][0] and vectors[i][1] > corners[0][1]:
-                if math.atan2(vectors[i][0] - corners[0][0],vectors[i][1] - corners[0][1]) > math.atan2(corners[1][0] - corners[0][0],corners[1][1] - corners[0][1]): 
+                if math.atan2(vectors[i][0] - corners[0][0],vectors[i][1] - corners[0][1]) < CornerAngles[0]: 
+                    print("Added to top left")
                     Packs[0].append(vectors[i])
             #Top right
             if vectors[i][0] > corners[1][0] and vectors[i][1] > corners[2][1]:
@@ -76,18 +85,43 @@ def ConvexHullV2(vectors):
                     Packs[3].append(vectors[i])
     for i in range(4):
         print("Pack",i+1,Packs[i])
+    print("## ----- Packs ----- ##")
     #print("Angle to ", vectors[i] , ": " , math.atan2(corners[0][0] - corners[3][0], corners[0][1] - corners[3][1]))
 
     #Filter packs based on angle. If angle is greater than from corner to next, then it isn't in the area.
     points = [corners[0]]
-               
-
+    Index = 0
+    Repeats = 0
+    while True:
+        Repeats += 1
+        if Repeats > 20:
+            print("Failed")
+            break
+        SmallestAngle = math.pi * 2 #Defaults to impossible
+        SmallestIndex = -1 
+        print("##-----##")
+        print("From:", points[-1])
+        for i in range(len(Packs[Index])):
+            Angle = math.atan2(Packs[Index][i][0] - points[-1][0],Packs[Index][i][1] - points[-1][1])
+            print("To",Packs[Index][i], Angle)
+            if Index > 1:
+                Angle = abs(Angle) + math.pi
+            if Angle < SmallestAngle:
+                SmallestAngle = Angle
+                SmallestIndex = i
+        points.append(Packs[Index][SmallestIndex])
+        if Packs[Index][SmallestIndex] == corners[(Index + 1) % 4]: #If we meet one of the corners -> Aim for next one.
+            Index += 1
+        if Packs[Index][SmallestIndex] == points[0]: #If we are back at start
+            break
+    return points
 
 if __name__ == "__main__":
     print("##--------------------##")
     #print(ConvexHull2D([[1.2,1.5],[2,0],[0,0],[-2,-2.2],[-3,1],[-1,-4]]))
-    print(ConvexHull2D([[5,1],[-5,-1],[1,5],[-1,-5],[1,1],[2,2],[3,3],[-1,1],[-2,2],[-3,3],[1,-1],[2,-2],[3,-3],[-1,-1],[-2,-2],[-3,-3],[0,0]]))
-    print(ConvexHullV2([[5,1],[-5,-1],[1,5],[-1,-5],[1,1],[2,2],[3,3],[-1,1],[-2,2],[-3,3],[1,-1],[2,-2],[3,-3],[-1,-1],[-2,-2],[-3,-3],[0,0]]))
+    #print(ConvexHull2D([[5,1],[-5,-1],[1,5],[-1,-5],[1,1],[2,2],[3,3],[-1,1],[-2,2],[-3,3],[1,-1],[2,-2],[3,-3],[-1,-1],[-2,-2],[-3,-3],[0,0]]))
+    #print(ConvexHullV2([[5,1],[-5,-1],[1,5],[-1,-5],[1,1],[2,2],[3,3],[-1,1],[-2,2],[-3,3],[1,-1],[2,-2],[3,-3],[-1,-1],[-2,-2],[-3,-3],[0,0]]))
+    print(ConvexHullV2([[0,3],[3,0],[0,-3],[-3,0],[2,2],[-2,2],[2,-2],[-2,-2],[0,0],[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[0,1],[-1,0],[0,-1]]))
 
 #     import random
 #     import time
