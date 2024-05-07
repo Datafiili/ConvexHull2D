@@ -83,7 +83,7 @@ def ConvexHullAarni(vectors):
         stopper += 1
         if stopper > 20:
             break
-        print(points[-1])
+        #print(points[-1])
         SmallestAngle = math.pi * 2 #Defaults to impossible
         SmallestIndex = -1 
         for i in range(len(Packs[Index])):
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     print("Generating Data")
     import random
     Datasets = []
-    for i in range(1):
+    for i in range(100):
         NewData = []
         for k in range(100):
             
@@ -121,8 +121,8 @@ if __name__ == "__main__":
             NewData.append([random.uniform(-5.0,5.0),random.uniform(-5.0,5.0)])
             Datasets.append(NewData)
     
-    print("Data Generated")
-    print("Data:",Datasets)
+    #print("Data Generated")
+    #print("Data:",Datasets)
     import time
     tik = time.time()
 
